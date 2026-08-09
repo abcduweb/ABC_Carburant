@@ -74,6 +74,14 @@ class FuelFilter extends StatelessWidget {
                   onSortChanged('price');
                 },
               ),
+              const SizedBox(width: 8),
+              ChoiceChip(
+                label: const Text('Gain net'),
+                selected: selectedSort == 'savings',
+                onSelected: (_) {
+                  onSortChanged('savings');
+                },
+              ),
             ],
           ),
         ),

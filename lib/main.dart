@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:workmanager/workmanager.dart';
+import 'services/alerts_service.dart';
 import 'package:provider/provider.dart';
 import 'providers/fuel_provider.dart';
 import 'screens/home_screen.dart';
@@ -9,6 +11,8 @@ import 'theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR', null);
+  await AlertsService.init();
+  await Workmanager().initialize(alertsCallbackDispatcher);
   runApp(const FuelCompareApp());
 }
 

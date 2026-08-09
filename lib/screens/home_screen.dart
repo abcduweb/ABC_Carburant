@@ -8,6 +8,8 @@ import '../widgets/error_view.dart';
 import 'about_screen.dart';
 import 'map_screen.dart';
 import 'location_intro_screen.dart';
+import 'trip_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -62,6 +64,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 tooltip: 'Favoris',
               ),
               IconButton(
+                icon: const Icon(Icons.route_outlined),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TripScreen()),
+                ),
+                tooltip: 'Sur mon trajet',
+              ),
+              IconButton(
                 icon: const Icon(Icons.map_outlined),
                 onPressed: () => Navigator.push(
                   context,
@@ -69,13 +79,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 tooltip: 'Carte',
               ),
-              IconButton(
-                icon: const Icon(Icons.info_outline),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AboutScreen()),
-                ),
-                tooltip: 'À Propos',
+              PopupMenuButton<String>(
+                onSelected: (v) {
+                  if (v == 'settings') {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const SettingsScreen()));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const AboutScreen()));
+                  }
+                },
+                itemBuilder: (_) => const [
+                  PopupMenuItem(
+                    value: 'settings',
+                    child: ListTile(
+                      leading: Icon(Icons.tune),
+                      title: Text('Réglages'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'about',
+                    child: ListTile(
+                      leading: Icon(Icons.info_outline),
+                      title: Text('À propos'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

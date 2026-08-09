@@ -95,6 +95,73 @@ class StationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Gain net, detour deduit
+                Consumer<FuelProvider>(
+                  builder: (context, provider, _) {
+                    final sav = provider.savingsFor(station);
+                    if (sav == null || sav.gross.abs() < 0.05) {
+                      return const SizedBox.shrink();
+                    }
+                    final positive = sav.isWorthIt;
+                    return Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 14),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: positive
+                            ? AppColors.greenLight
+                            : const Color(0xFFF3F1EF),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                positive
+                                    ? Icons.savings_outlined
+                                    : Icons.info_outline,
+                                size: 18,
+                                color: positive
+                                    ? AppColors.greenDark
+                                    : AppColors.charcoalLight,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  positive
+                                      ? 'Vous gagnez ${sav.net.toStringAsFixed(2)} € '
+                                          'sur un plein'
+                                      : (sav.net <= 0
+                                          ? 'Le détour coûte plus qu\'il ne rapporte'
+                                          : 'Gain négligeable : '
+                                              '${sav.net.toStringAsFixed(2)} €'),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: positive
+                                        ? AppColors.greenDark
+                                        : AppColors.charcoal,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${sav.gross.toStringAsFixed(2)} € économisés sur '
+                            '${provider.vehicle.tankLitres.toStringAsFixed(0)} L'
+                            '${sav.extraKm > 0 ? ' − ${sav.detourCost.toStringAsFixed(2)} € de détour (${sav.extraKm.toStringAsFixed(0)} km A/R)' : ''}',
+                            style: const TextStyle(
+                                fontSize: 12, color: AppColors.charcoalLight),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
                 // Adresse
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

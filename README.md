@@ -114,11 +114,17 @@ lib/
 │   └── navigation_service.dart     ouverture Google Maps / Waze
 ├── providers/fuel_provider.dart    état : stations, filtres, rayon
 ├── utils/date_formatter.dart       dates en français
-├── services/favorites_service.dart favoris persistants
+├── services/
+│   ├── favorites_service.dart      favoris persistants
+│   ├── savings_service.dart        véhicule + calcul du gain net
+│   ├── routing_service.dart        géocodage Nominatim + itinéraire OSRM
+│   └── alerts_service.dart         alertes de prix + tâche de fond
 ├── screens/
 │   ├── home_screen.dart            liste
 │   ├── map_screen.dart             carte OSM + marqueurs prix
 │   ├── location_intro_screen.dart  explication avant demande GPS
+│   ├── trip_screen.dart            stations le long d'un trajet
+│   ├── settings_screen.dart        véhicule et alertes
 │   └── about_screen.dart           crédits
 └── widgets/                        fiche station, filtres, recherche,
                                     écrans d'erreur
@@ -163,6 +169,40 @@ lever cette limite, il faudra paginer avec le paramètre `offset`.
 - Écran d'explication avant la demande de permission GPS
 - Écrans d'erreur avec action adaptée (réglages, réessai, recherche
   manuelle) selon la cause réelle
+- **Gain net** : économie sur le plein moins le carburant du détour,
+  calculée à partir du réservoir et de la consommation du véhicule.
+  Tri des stations par gain net disponible.
+- **Mode trajet** : stations le long d'un itinéraire A → B, en liste ou
+  sur carte, avec repérage de la moins chère
+- **Alertes de prix** : notification quand un carburant passe sous un
+  seuil, vérification périodique en arrière-plan
+
+---
+
+## Limites à connaître
+
+**Alertes.** Android bride les tâches de fond pour préserver la
+batterie. La fréquence demandée (6 h) est un minimum, pas une garantie :
+le délai réel peut être bien plus long, surtout avec l'économiseur de
+batterie actif ou sur les surcouches agressives (Xiaomi, Huawei,
+Samsung). L'application le signale à l'utilisateur dans les réglages
+plutôt que de promettre une ponctualité qu'elle ne peut pas tenir.
+
+**Mode trajet.** Le géocodage utilise Nominatim et l'itinéraire OSRM,
+deux services publics gratuits soumis à une politique d'usage
+raisonnable. Ils conviennent à un usage individuel ou à une audience
+modeste. Pour une diffusion large, il faut passer à une offre payante
+(Mapbox, Stadia, ou une instance OSRM auto-hébergée) — seules les URL
+dans `routing_service.dart` changent.
+
+Le trajet est échantillonné en 10 points, chacun donnant lieu à une
+requête dans un rayon de 6 km. Un trajet très long peut donc laisser
+des trous entre deux points d'échantillonnage : augmenter `maxPoints`
+améliore la couverture au prix du temps de réponse.
+
+**Gain net.** Le calcul compare chaque station à la plus proche vendant
+le même carburant, et compte le détour aller-retour. C'est une
+approximation : il ignore le trajet réel et suppose un plein complet.
 
 ---
 

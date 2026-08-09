@@ -7,6 +7,7 @@ import '../models/station.dart';
 import '../services/fuel_api_service.dart';
 import '../services/location_service.dart';
 import '../services/favorites_service.dart';
+import '../services/savings_service.dart';
 
 enum AppErrorKind {
   locationServiceDisabled,
@@ -39,6 +40,7 @@ class FuelProvider with ChangeNotifier {
   bool _favoritesOnly = false;
   Set<String> _favorites = {};
   bool _introSeen = false;
+  VehicleSettings _vehicle = const VehicleSettings();
 
   List<Station> get stations => _stations;
   bool get isLoading => _isLoading;
@@ -51,6 +53,25 @@ class FuelProvider with ChangeNotifier {
   bool get favoritesOnly => _favoritesOnly;
   Set<String> get favorites => _favorites;
   bool get introSeen => _introSeen;
+  VehicleSettings get vehicle => _vehicle;
+
+  /// Station de référence : la plus proche vendant le carburant choisi.
+  Station? get referenceStation =>
+      SavingsCalculator.reference(_stations, _selectedFuelType);
+
+  /// Gain net pour une station, détour déduit.
+  Savings? savingsFor(Station station) => SavingsCalculator.compute(
+        station: station,
+        reference: referenceStation,
+        fuelType: _selectedFuelType,
+        settings: _vehicle,
+      );
+
+  Future<void> setVehicle(VehicleSettings v) async {
+    _vehicle = v;
+    notifyListeners();
+    await v.save();
+  }
 
   bool isFavorite(String id) => _favorites.contains(id);
 
@@ -69,6 +90,17 @@ class FuelProvider with ChangeNotifier {
         final pb = b.prices[_selectedFuelType]?.price ?? double.infinity;
         return pa.compareTo(pb);
       });
+    } else if (_sortBy == 'savings') {
+      final ref = SavingsCalculator.reference(_stations, _selectedFuelType);
+      double gain(Station s) =>
+          SavingsCalculator.compute(
+            station: s,
+            reference: ref,
+            fuelType: _selectedFuelType,
+            settings: _vehicle,
+          )?.net ??
+          double.negativeInfinity;
+      filtered.sort((a, b) => gain(b).compareTo(gain(a)));
     } else {
       filtered.sort((a, b) => a.distance.compareTo(b.distance));
     }
@@ -84,6 +116,7 @@ class FuelProvider with ChangeNotifier {
     _radiusKm = prefs.getDouble('radius_km') ?? 20;
     _introSeen = prefs.getBool('intro_seen') ?? false;
     _favorites = await FavoritesService.load();
+    _vehicle = await VehicleSettings.load();
     notifyListeners();
   }
 
