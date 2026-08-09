@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" width="1024" height="500">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#8AB734"/><stop offset="100%" stop-color="#6F9429"/>
+</linearGradient></defs>
+<rect width="1024" height="500" fill="url(#g)"/>
+<g transform="translate(88,128) scale(0.48)">
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="#FFFFFF"/>
+  <rect x="18" y="18" width="476" height="476" rx="96" fill="none" stroke="#8AB734" stroke-width="30"/>
+  <path d="M256 96 C256 96 150 226 150 300 a106 106 0 0 0 212 0 C362 226 256 96 256 96 z" fill="#8AB734"/>
+  <text x="256" y="345" font-family="Helvetica,Arial,sans-serif" font-size="150"
+        font-weight="bold" fill="#FFFFFF" text-anchor="middle">€</text>
+</g>
+<text x="380" y="205" font-family="Helvetica,Arial,sans-serif" font-size="62"
+      font-weight="bold" fill="#FFFFFF">ABC Carburant</text>
+<text x="382" y="258" font-family="Helvetica,Arial,sans-serif" font-size="26"
+      fill="#FFFFFF" opacity="0.95">Le meilleur prix à la pompe, près de chez vous</text>
+<g transform="translate(382,300)" font-family="Helvetica,Arial,sans-serif" font-size="22" fill="#FFFFFF">
+  <rect x="0" y="0" width="168" height="44" rx="22" fill="#FFFFFF" opacity="0.22"/>
+  <text x="84" y="29" text-anchor="middle">Prix en direct</text>
+  <rect x="182" y="0" width="124" height="44" rx="22" fill="#FFFFFF" opacity="0.22"/>
+  <text x="244" y="29" text-anchor="middle">Carte</text>
+  <rect x="338" y="0" width="150" height="44" rx="22" fill="#FFFFFF" opacity="0.22"/>
+  <text x="413" y="29" text-anchor="middle">Itinéraire</text>
+</g>
+<text x="382" y="392" font-family="Helvetica,Arial,sans-serif" font-size="19"
+      fill="#FFFFFF" opacity="0.8">Données officielles · Sans publicité · Par ABCduWeb</text>
+</svg>
