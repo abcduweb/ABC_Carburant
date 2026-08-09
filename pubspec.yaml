@@ -1,0 +1,37 @@
+name: abc_carburant
+description: Comparateur de prix des carburants en France en temps réel.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+author: ABCduWeb <contact@abcduweb.fr>
+homepage: https://www.abcduweb.fr
+repository: https://github.com/abcduweb/abc-carburant
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  http: ^1.1.0
+  geolocator: ^9.0.2
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+  provider: ^6.0.0
+  intl: any
+  cached_network_image: ^3.3.0
+  url_launcher: ^6.2.5
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
