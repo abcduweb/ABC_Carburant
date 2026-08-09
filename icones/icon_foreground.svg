@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-<g transform="translate(256,256) scale(0.62) translate(-256,-256)">
-<rect x="18" y="18" width="476" height="476" rx="96" fill="none" stroke="#8AB734" stroke-width="30"/>
-<path d="M256 96 C256 96 150 226 150 300 a106 106 0 0 0 212 0 C362 226 256 96 256 96 z" fill="#8AB734"/>
-<text x="256" y="345" font-family="Helvetica,Arial,sans-serif" font-size="150" font-weight="bold"
-      fill="#FFFFFF" text-anchor="middle">€</text></g></svg>

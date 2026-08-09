@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 import '../models/station.dart';
 import 'fuel_api_service.dart';
 import 'favorites_service.dart';
@@ -30,8 +29,6 @@ class PriceAlert {
         favoritesOnly: j['favoritesOnly'] ?? true,
       );
 }
-
-const String _taskName = 'abc_price_check';
 
 class AlertsService {
   static final FlutterLocalNotificationsPlugin _plugin =
@@ -77,28 +74,31 @@ class AlertsService {
     return prefs.getBool(_kEnabled) ?? false;
   }
 
-  /// Active ou coupe la vérification périodique en arrière-plan.
+  /// Active ou coupe les alertes.
   static Future<void> setEnabled(bool value,
       {double? lat, double? lon, double? radiusKm}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kEnabled, value);
 
-    if (value) {
-      if (lat != null && lon != null) {
-        await prefs.setDouble('alert_lat', lat);
-        await prefs.setDouble('alert_lon', lon);
-        await prefs.setDouble('alert_radius', radiusKm ?? 20);
-      }
-      await Workmanager().registerPeriodicTask(
-        _taskName,
-        _taskName,
-        frequency: const Duration(hours: 6),
-        constraints: Constraints(networkType: NetworkType.connected),
-        existingWorkPolicy: ExistingWorkPolicy.replace,
-      );
-    } else {
-      await Workmanager().cancelByUniqueName(_taskName);
+    if (value && lat != null && lon != null) {
+      await prefs.setDouble('alert_lat', lat);
+      await prefs.setDouble('alert_lon', lon);
+      await prefs.setDouble('alert_radius', radiusKm ?? 20);
     }
+  }
+
+  /// Vérification déclenchée à l'ouverture de l'application, au plus une
+  /// fois par heure pour ne pas solliciter l'API inutilement.
+  static Future<void> checkOnLaunch() async {
+    if (!await isEnabled()) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final last = prefs.getInt('alerts_last_run') ?? 0;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (now - last < const Duration(hours: 1).inMilliseconds) return;
+
+    await prefs.setInt('alerts_last_run', now);
+    await check();
   }
 
   // ---------- Vérification ----------
@@ -178,15 +178,4 @@ class AlertsService {
     );
     await _plugin.show(id, title, body, details);
   }
-}
-
-/// Point d'entrée de la tâche de fond. Doit être une fonction de premier
-/// niveau annotée, sinon Android ne peut pas la retrouver.
-@pragma('vm:entry-point')
-void alertsCallbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    await AlertsService.init();
-    await AlertsService.check();
-    return true;
-  });
 }

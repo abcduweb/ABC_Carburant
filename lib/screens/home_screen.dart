@@ -10,6 +10,7 @@ import 'map_screen.dart';
 import 'location_intro_screen.dart';
 import 'trip_screen.dart';
 import 'settings_screen.dart';
+import '../services/alerts_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -30,7 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
       setState(() => _booting = false);
       // La demande systeme n'arrive qu'apres l'ecran d'explication
-      if (provider.introSeen) provider.initializeAndLoad();
+      if (provider.introSeen) {
+        provider.initializeAndLoad();
+        AlertsService.checkOnLaunch();
+      }
     });
   }
 

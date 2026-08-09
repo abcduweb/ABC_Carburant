@@ -12,7 +12,7 @@ lib/                      code source Dart complet
 assets/images/            logo ABCduWeb (fond transparent)
 pubspec.yaml              dépendances et déclaration des assets
 icones/                   jeu d'icônes Android + iOS + sources SVG
-config_reference/         AndroidManifest.xml de référence
+config_reference/         AndroidManifest.xml + correctif build.gradle
 ```
 
 **Ce paquet ne contient pas les dossiers `android/` et `ios/`.**
@@ -181,12 +181,18 @@ lever cette limite, il faudra paginer avec le paramètre `offset`.
 
 ## Limites à connaître
 
-**Alertes.** Android bride les tâches de fond pour préserver la
-batterie. La fréquence demandée (6 h) est un minimum, pas une garantie :
-le délai réel peut être bien plus long, surtout avec l'économiseur de
-batterie actif ou sur les surcouches agressives (Xiaomi, Huawei,
-Samsung). L'application le signale à l'utilisateur dans les réglages
-plutôt que de promettre une ponctualité qu'elle ne peut pas tenir.
+**Alertes.** La vérification a lieu à l'ouverture de l'application, au
+plus une fois par heure. Il n'y a pas de tâche de fond : le plugin
+`workmanager` a été retiré, sa version compatible avec les Flutter
+récents utilisant encore le Kotlin Gradle Plugin, que Flutter s'apprête
+à interdire. Android bride de toute façon fortement les tâches de fond,
+au point qu'une périodicité de 6 h n'aurait rien garanti. L'application
+l'indique clairement dans les réglages plutôt que de promettre des
+notifications qu'elle ne peut pas tenir.
+
+Pour de vraies notifications sans ouverture de l'app, la solution
+robuste est un serveur qui surveille les prix et envoie des messages
+push (Firebase Cloud Messaging) — à envisager si un client le finance.
 
 **Mode trajet.** Le géocodage utilise Nominatim et l'itinéraire OSRM,
 deux services publics gratuits soumis à une politique d'usage

@@ -212,8 +212,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Activer les alertes'),
                   subtitle: const Text(
-                    'Vérification environ toutes les 6 h, quand le téléphone '
-                    'est connecté.',
+                    'Vérification à chaque ouverture de l\'application, au '
+                    'plus une fois par heure.',
                     style: TextStyle(fontSize: 12),
                   ),
                   value: _alertsEnabled,
@@ -259,10 +259,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 const SizedBox(height: 12),
                 Text(
-                  'Android limite les tâches de fond pour préserver la '
-                  'batterie : le délai réel entre deux vérifications peut '
-                  'dépasser 6 h, surtout si l\'économiseur de batterie est '
-                  'actif pour cette application.',
+                  'Les prix sont vérifiés quand vous ouvrez l\'application. '
+                  'Vous ne recevrez donc pas de notification si vous ne '
+                  'l\'ouvrez jamais.',
                   style: TextStyle(
                       fontSize: 12, color: Colors.grey.shade600, height: 1.4),
                 ),
