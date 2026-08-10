@@ -1,0 +1,11 @@
+Placez ici vos captures d'ecran, nommees 1.png, 2.png, 3.png...
+
+Ordre attendu (voir 3_CAPTURES.md) :
+  1.png  liste des stations avec les prix
+  2.png  filtres carburant et rayon
+  3.png  carte avec les marqueurs de prix
+  4.png  fiche station depliee, bandeau de gain net visible
+  5.png  mode trajet avec un trajet calcule
+  6.png  liste filtree sur les favoris
+
+Puis :  python encadrer_captures.py

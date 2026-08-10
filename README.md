@@ -214,10 +214,20 @@ approximation : il ignore le trajet réel et suppose un plein complet.
 
 ## Publication
 
-Le dossier `play_store/` contient la politique de confidentialité à
-publier sur votre site (obligatoire pour Google Play), les textes de la
-fiche, les réponses exactes du formulaire « Sécurité des données », le
-bandeau 1024×500 et la checklist de mise en ligne.
+Le dossier `publication/` regroupe tout ce qui bloque la mise en ligne :
+
+| Fichier | Rôle |
+|---|---|
+| `CHECKLIST.md` | marche à suivre complète, dans l'ordre |
+| `creer_keystore.ps1` | crée le keystore et `key.properties` |
+| `1_KEYSTORE.md` | signature Gradle, sauvegarde, génération de l'AAB |
+| `2_confidentialite.html` | page prête à coller dans WordPress |
+| `3_CAPTURES.md` | quels écrans capturer et comment |
+| `encadrer_captures.py` | habille vos captures aux couleurs ABCduWeb |
+| `4_SECURITE_DONNEES.md` | réponses exactes du formulaire Google |
+
+Le dossier `play_store/` contient les textes de la fiche et le bandeau
+1024×500.
 
 ---
 

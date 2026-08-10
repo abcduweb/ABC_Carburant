@@ -27,7 +27,6 @@ dependencies:
   url_launcher: ^6.2.5
   shared_preferences: ^2.2.2
   flutter_local_notifications: ^17.2.2
-  workmanager: ^0.9.0
 
 dev_dependencies:
   flutter_test:

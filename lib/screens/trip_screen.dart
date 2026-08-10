@@ -36,21 +36,50 @@ class _TripScreenState extends State<TripScreen> {
     super.dispose();
   }
 
-  Future<void> _pickPlace(bool isFrom) async {
+  /// Convertit le texte saisi en coordonnées.
+  /// Renvoie true si un lieu a été retenu.
+  Future<bool> _resolve(bool isFrom) async {
     final ctrl = isFrom ? _fromCtrl : _toCtrl;
-    if (ctrl.text.trim().length < 3) return;
+    if (ctrl.text.trim().length < 3) {
+      setState(() => _error = isFrom
+          ? 'Indiquez un point de départ'
+          : 'Indiquez une adresse d\'arrivée');
+      return false;
+    }
 
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
     List<PlaceSuggestion> results = [];
     try {
       results = await RoutingService.search(ctrl.text);
     } catch (_) {}
+    if (!mounted) return false;
     setState(() => _loading = false);
 
-    if (!mounted) return;
     if (results.isEmpty) {
-      setState(() => _error = 'Lieu introuvable : « ${ctrl.text} »');
-      return;
+      setState(() => _error =
+          'Adresse introuvable : « ${ctrl.text} ». Essayez avec la commune '
+          'seule, ou vérifiez l\'orthographe.');
+      return false;
+    }
+
+    // Un seul résultat : on le retient sans faire choisir l'utilisateur
+    if (results.length == 1) {
+      final only = results.first;
+      setState(() {
+        _error = null;
+        if (isFrom) {
+          _from = only;
+          _fromCtrl.text = only.label.split(',').first;
+        } else {
+          _to = only;
+          _toCtrl.text = only.label.split(',').first;
+        }
+      });
+      return true;
     }
 
     final chosen = await showModalBottomSheet<PlaceSuggestion>(
@@ -69,7 +98,7 @@ class _TripScreenState extends State<TripScreen> {
       ),
     );
 
-    if (chosen == null) return;
+    if (chosen == null) return false;
     setState(() {
       _error = null;
       if (isFrom) {
@@ -80,6 +109,7 @@ class _TripScreenState extends State<TripScreen> {
         _toCtrl.text = chosen.label.split(',').first;
       }
     });
+    return true;
   }
 
   Future<void> _useCurrentPosition() async {
@@ -98,10 +128,11 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   Future<void> _computeTrip() async {
-    if (_from == null || _to == null) {
-      setState(() => _error = 'Renseignez un départ et une arrivée');
-      return;
-    }
+    // Géocodage automatique : l'utilisateur ne doit pas avoir à valider
+    // chaque champ au clavier avant de lancer la recherche.
+    if (_from == null && !await _resolve(true)) return;
+    if (_to == null && !await _resolve(false)) return;
+    if (_from == null || _to == null) return;
 
     setState(() {
       _loading = true;
@@ -200,7 +231,10 @@ class _TripScreenState extends State<TripScreen> {
                       onPressed: _useCurrentPosition,
                     ),
                   ),
-                  onSubmitted: (_) => _pickPlace(true),
+                  onChanged: (v) {
+                    if (_from != null && v != _fromCtrl.text) _from = null;
+                  },
+                  onSubmitted: (_) => _resolve(true),
                 ),
               ),
             ],
@@ -208,12 +242,18 @@ class _TripScreenState extends State<TripScreen> {
           const SizedBox(height: 10),
           TextField(
             controller: _toCtrl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Arrivée',
-              prefixIcon: Icon(Icons.place, size: 20),
+              prefixIcon: const Icon(Icons.place, size: 20),
               isDense: true,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.search, size: 20),
+                tooltip: 'Vérifier l\'adresse',
+                onPressed: () => _resolve(false),
+              ),
             ),
-            onSubmitted: (_) => _pickPlace(false),
+            onChanged: (_) => _to = null,
+            onSubmitted: (_) => _resolve(false),
           ),
           const SizedBox(height: 12),
           SizedBox(
