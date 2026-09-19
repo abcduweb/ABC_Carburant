@@ -125,6 +125,8 @@ lib/
 │   ├── location_intro_screen.dart  explication avant demande GPS
 │   ├── trip_screen.dart            stations le long d'un trajet
 │   ├── settings_screen.dart        véhicule et alertes
+│   ├── charging_screen.dart        bornes de recharge électrique
+│   └── tesla_screen.dart           superchargers Tesla (filtre sur ODRÉ)
 │   └── about_screen.dart           crédits
 └── widgets/                        fiche station, filtres, recherche,
                                     écrans d'erreur
@@ -136,9 +138,12 @@ constante à modifier pour changer la couleur dans toute l'application.
 
 ---
 
-## Source des données
+## Sources de données
 
-API publique du Ministère de l'Économie, sans clé ni quota :
+Trois sources distinctes, chacune avec ses propres limites — voir le
+détail dans le code des services concernés.
+
+**Carburants classiques** — API publique du Ministère de l'Économie, sans clé ni quota :
 
 ```
 https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/
@@ -147,7 +152,29 @@ prix-des-carburants-en-france-flux-instantane-v2/records
 
 Mise à jour toutes les 10 minutes.
 
-**Limite connue** : l'API renvoie au maximum 100 stations par requête. À
+**Bornes électriques** — ODRÉ (Open Data Réseaux Énergies), consolidation
+nationale du fichier IRVE (schéma officiel Etalab) :
+
+```
+https://odre.opendatasoft.com/api/explore/v2.1/catalog/datasets/
+bornes-irve/records
+```
+
+https://overpass-api.de/api/interpreter
+```
+
+**Superchargers Tesla** — aucune nouvelle source : les stations Tesla
+ouvertes au public sont légalement déclarées dans le même fichier IRVE
+que les autres bornes électriques. L'écran filtre simplement les
+résultats déjà récupérés sur l'opérateur/aménageur "Tesla"
+(`ChargingStation.isTesla`), sans appel réseau supplémentaire.
+
+Nominatim et OSRM, utilisés pour la recherche d'adresses et le mode
+trajet, sont des services publics à usage raisonnable : adaptés à un
+usage individuel ou une audience modeste, à remplacer par un serveur
+dédié en cas de diffusion large.
+
+**Pagination** : l'API plafonne `limit` à 100 par requête ; le service enchaîne jusqu'à 10 pages via `offset`. À
 100 km autour d'une grande ville, ce plafond est atteint et les stations
 les plus lointaines n'apparaissent pas. Le tri par distance est appliqué
 côté serveur, donc ce sont bien les 100 plus proches qui remontent. Pour
@@ -180,6 +207,48 @@ lever cette limite, il faudra paginer avec le paramètre `offset`.
 ---
 
 ## Limites à connaître
+
+**Qualité du fichier IRVE.** Le fichier consolidé agrège des données
+déclarées par les opérateurs, dont la qualité est inégale. Trois défauts
+sont compensés dans le code :
+
+- `nom_station` est saisi librement et contient parfois une commune
+  erronée (une station située 217 Avenue de Provence à Valence y est
+  déclarée « Valenciennes, France »). L'affichage privilégie donc
+  `consolidated_commune`, recalculée à partir des coordonnées, et ne
+  garde le libellé brut que s'il apporte une précision réelle.
+- Un même point de charge peut apparaître en double (plusieurs sources
+  publiant la même borne). Les lignes sont dédoublonnées sur
+  `id_pdc_itinerance` avant comptage.
+- Plusieurs stations distinctes partagent parfois le même
+  `id_station_itinerance`. La clé de regroupement combine donc
+  l'identifiant et les coordonnées arrondies (~100 m).
+
+**Bornes électriques (et Tesla).** Aucun filtre géographique côté
+serveur n'a fonctionné sur ce portail précis. L'API "Explore" V2.1
+exige un nom de champ géo jamais confirmé (`geom` et `geo_point_2d`
+ont échoué) ; l'API "Records" V1 et son paramètre `geofilter.distance`,
+documenté comme indépendant du nom des champs, a été vérifié
+directement (requête postée dans un navigateur) et renvoie `nhits: 0`
+pour Paris — la requête est bien reçue mais ne filtre rien.
+
+`ChargingApiService` récupère donc les données par pagination simple
+(`rows` et `start`, deux paramètres universels sans risque de mauvais
+nom de champ), jusqu'à 5 pages de 200 lignes, puis filtre et trie par
+distance entièrement côté client à partir du champ `coordonneesXY`
+(garanti par le schéma officiel IRVE).
+
+**Limite assumée** : sans filtre géographique serveur, la couverture
+dépend de l'ordre dans lequel l'API restitue les 1000 premières lignes
+du fichier national. Si cet ordre regroupe les bornes par région d'une
+façon qui ne commence pas près de l'utilisateur, certaines zones
+pourraient sembler moins bien couvertes que d'autres à rayon égal. Le
+calcul de distance et le tri, eux, sont fiables une fois les données
+reçues. Si ce comportement est confirmé en usage réel, la prochaine
+piste serait un géocodage inverse (Nominatim, déjà utilisé pour le
+mode trajet) vers un département, combiné à une recherche textuelle
+`q=` ciblée — mais cela n'a pas été implémenté sans validation
+préalable, pour ne pas répéter une supposition non vérifiée de plus.
 
 **Alertes.** La vérification a lieu à l'ouverture de l'application, au
 plus une fois par heure. Il n'y a pas de tâche de fond : le plugin
@@ -220,6 +289,8 @@ Le dossier `publication/` regroupe tout ce qui bloque la mise en ligne :
 |---|---|
 | `CHECKLIST.md` | marche à suivre complète, dans l'ordre |
 | `creer_keystore.ps1` | crée le keystore et `key.properties` |
+| `patch_signature.ps1` | applique la signature de release au build.gradle |
+| `verifier_signature.ps1` | contrôle l'AAB avant envoi sur Play |
 | `1_KEYSTORE.md` | signature Gradle, sauvegarde, génération de l'AAB |
 | `2_confidentialite.html` | page prête à coller dans WordPress |
 | `3_CAPTURES.md` | quels écrans capturer et comment |

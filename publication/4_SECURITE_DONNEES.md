@@ -107,7 +107,7 @@ n'est requise.
 Champ obligatoire, à renseigner dans **Fiche du store principale** :
 
 ```
-https://www.abcduweb.fr/abc-carburant/confidentialite
+https://abcduweb.fr/politique-de-confidentialite-abc-carburant/
 ```
 
 Publiez d'abord la page avec `2_confidentialite.html`, puis vérifiez

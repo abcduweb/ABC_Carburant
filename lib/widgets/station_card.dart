@@ -4,6 +4,8 @@ import '../providers/fuel_provider.dart';
 import '../models/station.dart';
 import '../services/navigation_service.dart';
 import '../utils/date_formatter.dart';
+import '../services/price_history_service.dart';
+import 'price_history_view.dart';
 import '../theme/app_theme.dart';
 
 class StationCard extends StatelessWidget {
@@ -204,11 +206,54 @@ class StationCard extends StatelessWidget {
                     children: station.prices.entries.map((entry) {
                       final fuelType = entry.key;
                       final fuelPrice = entry.value;
-                      return _buildFuelPriceRow(fuelType, fuelPrice);
+                      return _buildFuelPriceRow(
+                          context, fuelType, fuelPrice);
                     }).toList(),
                   ),
 
                 const SizedBox(height: 16),
+
+                // Historique des prix — uniquement pour les stations
+                // suivies : l'historique n'existe que pour les favoris.
+                Consumer<FuelProvider>(
+                  builder: (context, provider, _) {
+                    if (!provider.isFavorite(station.id)) {
+                      return const SizedBox.shrink();
+                    }
+                    final fuel = provider.selectedFuelType;
+                    if (!station.prices.containsKey(fuel)) {
+                      return const SizedBox.shrink();
+                    }
+                    return FutureBuilder<PriceHistory>(
+                      future: PriceHistoryService.load(station.id, fuel),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Évolution du $fuel',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              PriceHistoryView(
+                                history: snapshot.data!,
+                                fuelType: fuel,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
 
                 // Boutons d'action
                 Row(
@@ -236,7 +281,8 @@ class StationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFuelPriceRow(String fuelType, FuelPrice fuelPrice) {
+  Widget _buildFuelPriceRow(
+      BuildContext context, String fuelType, FuelPrice fuelPrice) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -273,6 +319,23 @@ class StationCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              // Coût aux 100 km : le seul chiffre qui permette de
+              // comparer honnêtement deux carburants, et un thermique
+              // à une électrique.
+              Consumer<FuelProvider>(
+                builder: (context, provider, _) {
+                  final cost =
+                      provider.vehicle.costPer100km(fuelPrice.price);
+                  return Text(
+                    'soit ${cost.toStringAsFixed(2)} € / 100 km',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.charcoalLight,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  );
+                },
               ),
             ],
           ),

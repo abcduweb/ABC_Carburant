@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'services/alerts_service.dart';
 import 'package:provider/provider.dart';
 import 'providers/fuel_provider.dart';
+import 'providers/charging_provider.dart';
+import 'providers/tesla_provider.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -22,6 +24,8 @@ class FuelCompareApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => FuelProvider()),
+        ChangeNotifierProvider(create: (_) => ChargingProvider()),
+        ChangeNotifierProvider(create: (_) => TeslaProvider()),
       ],
       child: MaterialApp(
         title: 'ABC Carburant',

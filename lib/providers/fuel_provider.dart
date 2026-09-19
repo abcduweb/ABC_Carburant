@@ -7,6 +7,7 @@ import '../models/station.dart';
 import '../services/fuel_api_service.dart';
 import '../services/location_service.dart';
 import '../services/favorites_service.dart';
+import '../services/price_history_service.dart';
 import '../services/savings_service.dart';
 
 enum AppErrorKind {
@@ -164,6 +165,7 @@ class FuelProvider with ChangeNotifier {
         radiusKm: radiusKm ?? _radiusKm,
       );
       if (_stations.isEmpty) _error = const AppError(AppErrorKind.empty);
+      _recordFavoritesHistory();
     } catch (e) {
       _error = _mapApiError(e);
     }
@@ -184,6 +186,7 @@ class FuelProvider with ChangeNotifier {
         _currentLon ?? 2.3,
       );
       if (_stations.isEmpty) _error = const AppError(AppErrorKind.empty);
+      _recordFavoritesHistory();
     } catch (e) {
       _error = _mapApiError(e);
     }
@@ -220,11 +223,30 @@ class FuelProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Mémorise les prix des seules stations favorites. Suivre toutes les
+  /// stations rencontrées ferait grossir le stockage sans fin.
+  void _recordFavoritesHistory() {
+    if (_favorites.isEmpty) return;
+    for (final s in _stations) {
+      if (_favorites.contains(s.id)) {
+        PriceHistoryService.recordStation(s);
+      }
+    }
+  }
+
   Future<void> toggleFavorite(String stationId) async {
     if (_favorites.contains(stationId)) {
       _favorites.remove(stationId);
+      // L'historique n'a plus lieu d'être conservé.
+      await PriceHistoryService.clearStation(stationId);
     } else {
       _favorites.add(stationId);
+      // Premier relevé immédiat, pour ne pas attendre le prochain
+      // rafraîchissement.
+      final station = _stations.where((s) => s.id == stationId);
+      if (station.isNotEmpty) {
+        await PriceHistoryService.recordStation(station.first);
+      }
     }
     notifyListeners();
     await FavoritesService.save(_favorites);

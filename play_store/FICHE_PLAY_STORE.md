@@ -20,7 +20,7 @@ Comparez les prix des carburants près de chez vous. Données officielles.
 ## Description complète (4000 caractères max)
 
 ```
-ABC Carburant vous aide à trouver la station la moins chère autour de vous, en quelques secondes.
+ABC Carburant est une application indépendante éditée par ABCduWeb, sans lien officiel avec l'État ni aucun organisme public. Elle vous aide à trouver la station la moins chère autour de vous, en quelques secondes, à partir de données publiques ouvertes.
 
 L'application s'appuie sur les données officielles du Ministère de l'Économie, mises à jour en continu par les stations elles-mêmes. Aucune estimation, aucun prix inventé : ce que vous voyez est ce que les stations ont déclaré.
 
@@ -50,7 +50,7 @@ Pas envie d'activer la localisation ? Cherchez par commune ou code postal.
 
 ---
 
-Source des données : fichier public des prix des carburants, data.economie.gouv.fr
+Source des données : fichier public des prix des carburants, data.economie.gouv.fr (Ministère de l'Économie). ABC Carburant n'est pas affilié à cette administration et n'est pas une application officielle.
 Fond de carte : OpenStreetMap et ses contributeurs
 
 Application développée par ABCduWeb, agence web à Beauvallon (Drôme).
@@ -100,7 +100,7 @@ aucune donnée n'est conservée sur serveur.
 Publier `POLITIQUE_CONFIDENTIALITE.md` sur votre site, par exemple :
 
 ```
-https://www.abcduweb.fr/abc-carburant/confidentialite
+https://abcduweb.fr/politique-de-confidentialite-abc-carburant/
 ```
 
 Cette URL est **obligatoire** : sans elle, la fiche est rejetée.

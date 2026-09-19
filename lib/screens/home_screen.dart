@@ -5,11 +5,15 @@ import '../widgets/station_card.dart';
 import '../widgets/fuel_filter.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/error_view.dart';
+import '../widgets/energy_selector.dart';
+import '../theme/app_theme.dart';
 import 'about_screen.dart';
 import 'map_screen.dart';
 import 'location_intro_screen.dart';
 import 'trip_screen.dart';
 import 'settings_screen.dart';
+import 'charging_screen.dart';
+import 'tesla_screen.dart';
 import '../services/alerts_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _booting = true;
+  EnergyType _energy = EnergyType.thermal;
 
   @override
   void initState() {
@@ -114,10 +119,34 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          body: _buildBody(context, provider),
+          body: Column(
+            children: [
+              const SizedBox(height: 8),
+              EnergySelector(
+                selected: _energy,
+                onChanged: (e) => setState(() => _energy = e),
+              ),
+              const SizedBox(height: 8),
+              Expanded(child: _buildEnergyBody(context, provider)),
+            ],
+          ),
         );
       },
     );
+  }
+
+  /// Les trois catégories ne sont plus des écrans séparés atteints par
+  /// menu : elles se choisissent en haut de l'écran, ce qui rend visible
+  /// le fait que l'application couvre toutes les motorisations.
+  Widget _buildEnergyBody(BuildContext context, FuelProvider provider) {
+    switch (_energy) {
+      case EnergyType.thermal:
+        return _buildBody(context, provider);
+      case EnergyType.electric:
+        return const ChargingScreen(embedded: true);
+      case EnergyType.tesla:
+        return const TeslaScreen(embedded: true);
+    }
   }
 
   Widget _buildBody(BuildContext context, FuelProvider provider) {
@@ -139,6 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return ErrorView(
         error: provider.error!,
         onRetry: () => provider.initializeAndLoad(),
+        subject: 'des carburants',
       );
     }
 
@@ -187,6 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? const AppError(AppErrorKind.empty)
                     : (provider.error ?? const AppError(AppErrorKind.empty)),
                 onRetry: provider.refresh,
+                subject: 'des carburants',
               ),
             )
           else

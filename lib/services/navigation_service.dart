@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/station.dart';
+import '../models/locatable.dart';
 
 /// Ouverture d'un itinéraire vers une station dans Google Maps ou Waze.
 class NavigationService {
@@ -12,7 +12,7 @@ class NavigationService {
     }
   }
 
-  static Future<bool> openGoogleMaps(Station s) async {
+  static Future<bool> openGoogleMaps(Locatable s) async {
     // Application native si présente, sinon navigateur
     final app = Uri.parse(
         'google.navigation:q=${s.latitude},${s.longitude}&mode=d');
@@ -23,7 +23,7 @@ class NavigationService {
         'https://www.google.com/maps/dir/?api=1&destination=${s.latitude},${s.longitude}&travelmode=driving'));
   }
 
-  static Future<bool> openWaze(Station s) async {
+  static Future<bool> openWaze(Locatable s) async {
     final app = Uri.parse('waze://?ll=${s.latitude},${s.longitude}&navigate=yes');
     if (await canLaunchUrl(app)) {
       if (await _open(app)) return true;
@@ -33,7 +33,7 @@ class NavigationService {
   }
 
   /// Feuille de choix Google Maps / Waze / appli par défaut.
-  static void showChoice(BuildContext context, Station s) {
+  static void showChoice(BuildContext context, Locatable s) {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,

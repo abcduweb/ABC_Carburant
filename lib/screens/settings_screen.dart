@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/fuel_provider.dart';
 import '../services/alerts_service.dart';
 import '../services/savings_service.dart';
+import '../services/price_history_service.dart';
 import '../theme/app_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,6 +16,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController _tankCtrl;
   late TextEditingController _consoCtrl;
+  late TextEditingController _kwhConsoCtrl;
+  late TextEditingController _kwhPriceCtrl;
 
   bool _alertsEnabled = false;
   List<PriceAlert> _alerts = [];
@@ -26,6 +29,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final v = context.read<FuelProvider>().vehicle;
     _tankCtrl = TextEditingController(text: v.tankLitres.toStringAsFixed(0));
     _consoCtrl = TextEditingController(text: v.consumption.toStringAsFixed(1));
+    _kwhConsoCtrl =
+        TextEditingController(text: v.kwhConsumption.toStringAsFixed(1));
+    _kwhPriceCtrl =
+        TextEditingController(text: v.kwhPrice.toStringAsFixed(2));
     _load();
   }
 
@@ -44,15 +51,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     _tankCtrl.dispose();
     _consoCtrl.dispose();
+    _kwhConsoCtrl.dispose();
+    _kwhPriceCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _saveVehicle() async {
     final tank = double.tryParse(_tankCtrl.text.replaceAll(',', '.'));
     final conso = double.tryParse(_consoCtrl.text.replaceAll(',', '.'));
+    final kwhConso =
+        double.tryParse(_kwhConsoCtrl.text.replaceAll(',', '.'));
+    final kwhPrice =
+        double.tryParse(_kwhPriceCtrl.text.replaceAll(',', '.'));
     if (tank == null || conso == null || tank <= 0 || conso <= 0) return;
     await context.read<FuelProvider>().setVehicle(
-          VehicleSettings(tankLitres: tank, consumption: conso),
+          VehicleSettings(
+            tankLitres: tank,
+            consumption: conso,
+            kwhConsumption:
+                (kwhConso != null && kwhConso > 0) ? kwhConso : 17,
+            kwhPrice: (kwhPrice != null && kwhPrice > 0) ? kwhPrice : 0.40,
+          ),
         );
   }
 
@@ -206,6 +225,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
 
+                const SizedBox(height: 16),
+                const Text(
+                  'Si vous roulez en électrique, renseignez aussi votre '
+                  'consommation et votre tarif de recharge habituel : le '
+                  'fichier officiel des bornes ne publie aucun prix.',
+                  style: TextStyle(fontSize: 13, height: 1.4),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _kwhConsoCtrl,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        decoration: const InputDecoration(
+                          labelText: 'Consommation',
+                          suffixText: 'kWh/100',
+                          isDense: true,
+                        ),
+                        onChanged: (_) => _saveVehicle(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: _kwhPriceCtrl,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        decoration: const InputDecoration(
+                          labelText: 'Tarif recharge',
+                          suffixText: '€/kWh',
+                          isDense: true,
+                        ),
+                        onChanged: (_) => _saveVehicle(),
+                      ),
+                    ),
+                  ],
+                ),
+
                 const SizedBox(height: 32),
                 const _SectionTitle('Alertes de prix'),
                 SwitchListTile(
@@ -283,6 +342,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: const Icon(Icons.play_arrow),
                     label: const Text('Tester maintenant'),
                   ),
+                ),
+
+                const SizedBox(height: 32),
+                const _SectionTitle('Historique des prix'),
+                const Text(
+                  'Les prix de vos stations favorites sont mémorisés à '
+                  'chaque consultation, pour afficher leur évolution. Ces '
+                  'relevés restent sur votre téléphone.',
+                  style: TextStyle(fontSize: 13, height: 1.4),
+                ),
+                const SizedBox(height: 12),
+                FutureBuilder<int>(
+                  future: PriceHistoryService.totalPoints(),
+                  builder: (context, snapshot) {
+                    final n = snapshot.data ?? 0;
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            n == 0
+                                ? 'Aucun relevé enregistré'
+                                : '$n relevé${n > 1 ? 's' : ''} enregistré'
+                                    '${n > 1 ? 's' : ''}',
+                            style: TextStyle(
+                                fontSize: 13, color: Colors.grey.shade700),
+                          ),
+                        ),
+                        if (n > 0)
+                          TextButton.icon(
+                            onPressed: () async {
+                              await PriceHistoryService.clearAll();
+                              if (!context.mounted) return;
+                              setState(() {});
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Historique effacé')),
+                              );
+                            },
+                            icon: const Icon(Icons.delete_outline, size: 18),
+                            label: const Text('Effacer'),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

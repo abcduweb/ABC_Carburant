@@ -8,9 +8,16 @@ import '../theme/app_theme.dart';
 class ErrorView extends StatelessWidget {
   final AppError error;
   final VoidCallback onRetry;
+  /// Ce qui est recherché, pour un message précis ("des carburants",
+  /// "des bornes électriques"...). Reste neutre par défaut.
+  final String subject;
 
-  const ErrorView({Key? key, required this.error, required this.onRetry})
-      : super(key: key);
+  const ErrorView({
+    Key? key,
+    required this.error,
+    required this.onRetry,
+    this.subject = 'des données',
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -63,15 +70,14 @@ class ErrorView extends StatelessWidget {
       case AppErrorKind.server:
         icon = Icons.cloud_off;
         title = 'Service indisponible';
-        message = 'Le service de données des carburants ne répond pas. '
+        message = 'Le service $subject ne répond pas. '
             'Réessayez dans quelques instants.';
         break;
 
       case AppErrorKind.empty:
         icon = Icons.search_off;
-        title = 'Aucune station trouvée';
-        message = 'Essayez d\'élargir le rayon de recherche ou de changer '
-            'de carburant.';
+        title = 'Aucun résultat';
+        message = 'Essayez d\'élargir le rayon de recherche.';
         break;
 
       case AppErrorKind.unknown:

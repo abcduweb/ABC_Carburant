@@ -45,6 +45,37 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: 20),
+
+            // Clause de non-responsabilite : application independante,
+            // sans lien avec un service public. Doit rester visible sans
+            // action de l'utilisateur (exigence Google Play).
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF4E5),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE8A33D)),
+              ),
+              child: const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: Color(0xFF8A5A00)),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'ABC Carburant est une application indépendante, éditée '
+                      'par ABCduWeb. Elle n\'est ni un service officiel ni un '
+                      'site du gouvernement : elle affiche des données '
+                      'publiques mises à disposition par l\'État.',
+                      style: TextStyle(fontSize: 12.5, height: 1.4, color: Color(0xFF5C3D00)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 32),
 
             // Présentation
@@ -77,7 +108,7 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildFeatureItem('📍 Géolocalisation GPS', 'Trouve les stations proches de vous'),
-            _buildFeatureItem('💰 Prix en temps réel', 'Données actualisées de l\'API gouvernementale'),
+            _buildFeatureItem('💰 Prix en temps réel', 'Données publiques actualisées en continu'),
             _buildFeatureItem('🔍 Recherche', 'Cherchez par code postal ou commune'),
             _buildFeatureItem('📊 Filtres', 'Filtrez par type de carburant'),
             _buildFeatureItem('📈 Tri', 'Triez par distance ou prix'),
@@ -104,19 +135,99 @@ class AboutScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    '🏛️ Gouvernement Français',
+                    '🏛️ Data.economie.gouv.fr',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Données officielles des prix des carburants',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    'Données publiques ouvertes du Ministère de l\'Économie. '
+                    'ABC Carburant s\'y connecte pour afficher les prix, sans '
+                    'lien officiel avec cette administration.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey, height: 1.4),
                   ),
                   const SizedBox(height: 8),
                   GestureDetector(
                     onTap: () => _openUrl('https://data.economie.gouv.fr'),
                     child: const Text(
                       'https://data.economie.gouv.fr',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.green,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.greenLight,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.green),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '🔌 Open Data Réseaux Énergies (ODRÉ)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Localisation des bornes de recharge électrique '
+                    '(fichier national IRVE), sans lien officiel avec cet '
+                    'organisme. Les Superchargers Tesla affichés dans '
+                    'l\'application proviennent de ce même fichier, filtré '
+                    'par opérateur — sans lien avec Tesla, Inc.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey, height: 1.4),
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => _openUrl(
+                        'https://odre.opendatasoft.com/explore/dataset/bornes-irve/'),
+                    child: const Text(
+                      'odre.opendatasoft.com',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.green,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFEFEC),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.charcoalLight),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '🧭 OpenStreetMap',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Fond de carte, recherche d\'adresses et calcul '
+                    'd\'itinéraires : données communautaires OpenStreetMap.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey, height: 1.4),
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => _openUrl('https://www.openstreetmap.org/copyright'),
+                    child: const Text(
+                      'openstreetmap.org/copyright',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.green,
@@ -246,7 +357,7 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildLinkItem('Site ABCduWeb', 'https://www.abcduweb.fr'),
-            _buildLinkItem('API Gouvernementale', 'https://data.economie.gouv.fr'),
+            _buildLinkItem('Données data.economie.gouv.fr', 'https://data.economie.gouv.fr'),
             _buildLinkItem('Flutter Documentation', 'https://flutter.dev'),
 
             const SizedBox(height: 32),

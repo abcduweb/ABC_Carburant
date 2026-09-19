@@ -1,6 +1,7 @@
 import 'dart:math';
+import 'locatable.dart';
 
-class Station {
+class Station implements Locatable {
   final String id;
   final String name;
   final String address;

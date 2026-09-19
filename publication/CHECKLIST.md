@@ -12,13 +12,26 @@ cd C:\abc_carburant\publication
 powershell -ExecutionPolicy Bypass -File creer_keystore.ps1
 ```
 
-Puis appliquer le bloc `signingConfigs` dans `build.gradle.kts`
-(voir **1_KEYSTORE.md**, section 3).
+Puis appliquer la signature :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File patch_signature.ps1
+cd C:\abc_carburant
+flutter build appbundle --release
+```
+
+Et **vérifier avant d'envoyer quoi que ce soit** :
+
+```powershell
+cd C:\abc_carburant\publication
+powershell -ExecutionPolicy Bypass -File verifier_signature.ps1
+```
 
 - [ ] Keystore créé
 - [ ] **Fichier `.jks` et mot de passe sauvegardés hors de la machine**
-- [ ] `signingConfigs` en place dans `build.gradle.kts`
+- [ ] `patch_signature.ps1` exécuté sans erreur
 - [ ] `flutter build appbundle --release` réussi
+- [ ] `verifier_signature.ps1` confirme une signature de release
 
 > Sans cette sauvegarde, une panne de disque vous interdit à jamais de
 > mettre à jour l'application publiée.
@@ -30,7 +43,7 @@ Puis appliquer le bloc `signingConfigs` dans `build.gradle.kts`
 Sur abcduweb.fr, créer une page WordPress :
 
 - Titre : *Politique de confidentialité — ABC Carburant*
-- Permalien : `/abc-carburant/confidentialite`
+- Permalien : `/politique-de-confidentialite-abc-carburant/`
 - Contenu : bloc **HTML personnalisé**, y coller `2_confidentialite.html`
 - **Publier** (pas laisser en brouillon)
 

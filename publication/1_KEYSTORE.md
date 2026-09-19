@@ -35,7 +35,18 @@ Un disque qui lâche, un poste réinstallé, et l'application est perdue.
 
 ## 3. Configurer Gradle
 
-Dans `android/app/build.gradle.kts`.
+**Le plus simple — script automatique :**
+
+```powershell
+cd C:\abc_carburant\publication
+powershell -ExecutionPolicy Bypass -File patch_signature.ps1
+```
+
+Il sauvegarde votre fichier, applique les trois modifications, puis
+vérifie le résultat. Si une étape ne passe pas, il le signale et vous
+renvoie vers la version de référence.
+
+**Ou à la main**, dans `android/app/build.gradle.kts`.
 
 **Tout en haut du fichier**, avant le bloc `plugins { }` :
 
@@ -92,17 +103,20 @@ Résultat : `build\app\outputs\bundle\release\app-release.aab`
 
 ---
 
-## 5. Vérifier la signature
+## 5. Vérifier la signature — avant tout envoi
 
 ```powershell
-cd C:\abc_carburant
-Expand-Archive build\app\outputs\bundle\release\app-release.aab `
-  -DestinationPath "$env:TEMP\aab_check" -Force
-Get-ChildItem "$env:TEMP\aab_check\META-INF" | Select-Object Name
+cd C:\abc_carburant\publication
+powershell -ExecutionPolicy Bypass -File verifier_signature.ps1
 ```
 
-Vous devez voir des fichiers `.RSA` ou `.SF`. Leur absence signifie que
-le bundle n'est pas signé.
+Le script extrait le certificat du bundle et vous dit lequel a servi.
+
+> Un AAB signé avec la clé de debug est **refusé par Play Console** :
+> « Vous avez importé un APK ou un fichier Android App Bundle avec une
+> signature en mode débogage. » C'est le symptôme d'un `signingConfigs`
+> non appliqué — relancez `patch_signature.ps1`, puis regénérez le
+> bundle.
 
 ---
 

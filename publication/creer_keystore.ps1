@@ -1,5 +1,5 @@
 # =====================================================================
-#  ABC Carburant — Creation du keystore de release et configuration
+#  ABC Carburant - Creation du keystore de release et configuration
 #  de la signature Gradle.
 #
 #  A executer UNE SEULE FOIS, depuis n'importe ou :
