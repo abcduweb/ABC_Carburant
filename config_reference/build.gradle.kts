@@ -8,6 +8,8 @@
 //  patch_signature.ps1 qui applique les modifications une par une.
 // =====================================================================
 
+@file:Suppress("DEPRECATION", "DEPRECATION_ERROR")
+
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -48,7 +50,7 @@ android {
 
     defaultConfig {
         applicationId = "com.abcduweb.abc_carburant"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
