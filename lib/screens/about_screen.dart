@@ -325,6 +325,88 @@ class AboutScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
+            // Code source — l'interet du lien n'est pas technique : il
+            // rend verifiable la promesse "aucun traceur, aucune
+            // publicite" affichee sur la fiche Play Store.
+            const Text(
+              'Code source',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.greenLight,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.green),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.verified_user_outlined,
+                          size: 18, color: AppColors.greenDark),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Transparence',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: AppColors.greenDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'ABC Carburant ne collecte aucune donnée personnelle, '
+                    'n\'intègre aucun traceur et n\'affiche aucune '
+                    'publicité. Le code source est consultable pour que '
+                    'chacun puisse le vérifier par lui-même.',
+                    style: TextStyle(fontSize: 12, height: 1.5),
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => _openUrl(
+                        'https://github.com/abcduweb/ABC_Carburant'),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.code, size: 14, color: AppColors.greenDark),
+                        SizedBox(width: 6),
+                        Text(
+                          'github.com/abcduweb/ABC_Carburant',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.greenDark,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Code publié à des fins de vérification. '
+                    'Tous droits réservés : toute réutilisation, '
+                    'compilation ou redistribution requiert '
+                    'l\'autorisation écrite d\'ABCduWeb.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      height: 1.4,
+                      color: AppColors.charcoalLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
             // Technos
             const Text(
               'Technologies Utilisées',
@@ -358,6 +440,8 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildLinkItem('Site ABCduWeb', 'https://www.abcduweb.fr'),
             _buildLinkItem('Données data.economie.gouv.fr', 'https://data.economie.gouv.fr'),
+            _buildLinkItem('Code source (GitHub)',
+                'https://github.com/abcduweb/ABC_Carburant'),
             _buildLinkItem('Flutter Documentation', 'https://flutter.dev'),
 
             const SizedBox(height: 32),
