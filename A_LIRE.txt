@@ -1,0 +1,36 @@
+ABC Carburant - mise a jour 1.1.1+8
+
+DEUX FICHIERS, A COPIER DANS LES DEUX DOSSIERS
+-----------------------------------------------------------------
+
+  lib\screens\about_screen.dart   ->  remplace l'existant
+  pubspec.yaml                    ->  remplace l'existant
+
+Destinations :
+  C:\abc_carburant                                    (build)
+  ...\AGENCE WEB\applis\ABC_Carburant                 (depot Git)
+
+
+CE QUI CHANGE
+-----------------------------------------------------------------
+
+Ecran "A propos", section "Code source" ajoutee :
+  - encadre vert, titre "Transparence"
+  - aucune donnee collectee, aucun traceur, aucune publicite
+  - lien github.com/abcduweb/ABC_Carburant
+  - mention : tous droits reserves, reutilisation sur autorisation
+
+Section "Ressources" : entree "Code source (GitHub)".
+
+Version : 1.0.0+7  ->  1.1.1+8
+
+
+PAS DE LICENSE DANS CE ZIP
+-----------------------------------------------------------------
+Il est deja en place sur GitHub (commit e6c1b00).
+
+PAS DE DOSSIER android\
+-----------------------------------------------------------------
+Volontaire : il n'existe que dans C:\abc_carburant et porte la
+signature de release, le desugaring, ndkVersion et le correctif
+AGP 9. Ne jamais le remplacer par une archive.
