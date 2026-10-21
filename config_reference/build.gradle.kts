@@ -1,14 +1,15 @@
 // =====================================================================
-//  ABC Carburant — android/app/build.gradle.kts
+//  ABC Carburant - android/app/build.gradle.kts
 //  Version complete, signature de release incluse.
-//
-//  Ce fichier est une REFERENCE. Le votre a ete genere par
-//  "flutter create" et peut differer selon votre version de Flutter :
-//  comparez plutot que d'ecraser aveuglement, ou utilisez le script
-//  patch_signature.ps1 qui applique les modifications une par une.
 // =====================================================================
 
 @file:Suppress("DEPRECATION", "DEPRECATION_ERROR")
+// AGP 9 transforme en ERREURS de compilation du script les
+// depreciations de "android { }" et de "kotlinOptions". L'ancien DSL
+// reste fonctionnel a l'execution : cette annotation autorise
+// explicitement son usage. A revoir pour AGP 10, qui le supprimera.
+// (android.newDsl=false NE suffit pas : ce drapeau agit a l'execution,
+// pas a la compilation du script.)
 
 import java.util.Properties
 import java.io.FileInputStream
@@ -32,8 +33,7 @@ android {
     compileSdk = flutter.compileSdkVersion
 
     // Version imposee par les plugins (flutter_local_notifications,
-    // geolocator, sqflite...). Laisser flutter.ndkVersion provoque un
-    // conflit de versions au build.
+    // geolocator, sqflite...). flutter.ndkVersion provoque un conflit.
     ndkVersion = "28.2.13676358"
 
     compileOptions {
@@ -50,7 +50,7 @@ android {
 
     defaultConfig {
         applicationId = "com.abcduweb.abc_carburant"
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -69,8 +69,6 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-            // Passer a false si le build echoue sur la minification :
-            // ce sont des optimisations de taille, pas des obligations.
             isMinifyEnabled = true
             isShrinkResources = true
         }
