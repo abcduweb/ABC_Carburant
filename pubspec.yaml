@@ -2,7 +2,7 @@ name: abc_carburant
 description: Comparateur de prix des carburants en France en temps réel.
 publish_to: 'none'
 
-version: 1.1.1+8
+version: 1.1.4+9
 
 author: ABCduWeb <contact@abcduweb.fr>
 homepage: https://www.abcduweb.fr

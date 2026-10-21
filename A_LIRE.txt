@@ -1,36 +1,70 @@
-ABC Carburant - mise a jour 1.1.1+8
+ABC Carburant - version 1.1.4+11
+Refonte de la carte
 
-DEUX FICHIERS, A COPIER DANS LES DEUX DOSSIERS
+TROIS FICHIERS
 -----------------------------------------------------------------
 
-  lib\screens\about_screen.dart   ->  remplace l'existant
-  pubspec.yaml                    ->  remplace l'existant
+  lib\screens\map_screen.dart     ->  les deux dossiers
+  pubspec.yaml                    ->  les deux dossiers
+  config_reference\build.gradle.kts  ->  DEPOT GIT uniquement
 
-Destinations :
-  C:\abc_carburant                                    (build)
-  ...\AGENCE WEB\applis\ABC_Carburant                 (depot Git)
+Dossiers :
+  C:\abc_carburant                            (build)
+  ...\AGENCE WEB\applis\ABC_Carburant         (depot Git)
 
 
-CE QUI CHANGE
+1. CARTE UNIQUE AVEC FILTRES
 -----------------------------------------------------------------
 
-Ecran "A propos", section "Code source" ajoutee :
-  - encadre vert, titre "Transparence"
-  - aucune donnee collectee, aucun traceur, aucune publicite
-  - lien github.com/abcduweb/ABC_Carburant
-  - mention : tous droits reserves, reutilisation sur autorisation
+Avant : la carte suivait l'onglet courant. Ouverte depuis
+Electrique, elle n'affichait QUE les bornes - d'ou la disparition
+des stations essence - et son titre changeait a chaque fois.
 
-Section "Ressources" : entree "Code source (GitHub)".
+Maintenant : une seule carte, titre "Carte", et trois filtres
+cumulables en haut de l'ecran.
 
-Version : 1.0.0+7  ->  1.1.1+8
+  Carburant (23)    vert
+  Electrique (12)   violet
+  Tesla (3)         rouge
+
+Chaque filtre affiche le nombre de points de sa couche, et une
+roue d'attente pendant son chargement. Un appui active ou
+desactive la couche. Au moins une couche reste toujours active :
+tout decocher viderait la carte sans explication.
+
+A l'ouverture : les carburants sont actifs (deja charges, cout
+nul), plus l'onglet d'ou vous venez.
+
+Les bornes et Tesla ne se chargent que lorsque leur onglet est
+visite. Si vous activez leur filtre sans y etre passe, la carte
+declenche le chargement, en reutilisant la position GPS deja
+connue plutot que d'en redemander une.
+
+La legende s'adapte aux couches actives.
 
 
-PAS DE LICENSE DANS CE ZIP
+2. MINIFICATION DESACTIVEE DANS LA REFERENCE
 -----------------------------------------------------------------
-Il est deja en place sur GitHub (commit e6c1b00).
 
-PAS DE DOSSIER android\
+C'est la cause du blocage au demarrage de ce matin. R8 supprimait
+du code atteint par reflexion, le premier appel de plugin
+echouait dans un callback asynchrone, et l'ecran tournait
+indefiniment sans message d'erreur.
+
+config_reference portait isMinifyEnabled = true : toute nouvelle
+reconstruction aurait reintroduit le probleme. C'est desormais
+false, avec le motif en commentaire.
+
+Pour les reactiver un jour, il faudra des regles de conservation,
+notamment pour flutter_local_notifications (Gson, donc
+reflexion). Le gain n'est que de quelques Mo.
+
+
+Version : 1.1.3+10  ->  1.1.4+11
+
+
+PAS DE DOSSIER android\ DANS CE ZIP
 -----------------------------------------------------------------
-Volontaire : il n'existe que dans C:\abc_carburant et porte la
-signature de release, le desugaring, ndkVersion et le correctif
-AGP 9. Ne jamais le remplacer par une archive.
+Votre android\app\build.gradle.kts actuel a deja la minification
+desactivee (vous l'avez corrige ce matin) : il n'y a rien a y
+changer. Le fichier de ce ZIP ne sert qu'a la reference versionnee.

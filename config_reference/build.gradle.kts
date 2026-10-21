@@ -1,15 +1,21 @@
 // =====================================================================
 //  ABC Carburant - android/app/build.gradle.kts
 //  Version complete, signature de release incluse.
+//
+//  Ce fichier est une REFERENCE. Le votre a ete genere par
+//  "flutter create" et peut differer selon votre version de Flutter :
+//  comparez plutot que d'ecraser aveuglement, ou utilisez le script
+//  patch_signature.ps1 qui applique les modifications une par une.
 // =====================================================================
 
 @file:Suppress("DEPRECATION", "DEPRECATION_ERROR")
 // AGP 9 transforme en ERREURS de compilation du script les
 // depreciations de "android { }" et de "kotlinOptions". L'ancien DSL
-// reste fonctionnel a l'execution : cette annotation autorise
-// explicitement son usage. A revoir pour AGP 10, qui le supprimera.
-// (android.newDsl=false NE suffit pas : ce drapeau agit a l'execution,
-// pas a la compilation du script.)
+// reste parfaitement fonctionnel a l'execution : cette annotation
+// autorise explicitement son usage. A revoir pour AGP 10, qui le
+// supprimera pour de bon.
+// (android.newDsl=false dans gradle.properties NE suffit pas : ce
+// drapeau agit a l'execution, pas a la compilation du script.)
 
 import java.util.Properties
 import java.io.FileInputStream
@@ -33,7 +39,8 @@ android {
     compileSdk = flutter.compileSdkVersion
 
     // Version imposee par les plugins (flutter_local_notifications,
-    // geolocator, sqflite...). flutter.ndkVersion provoque un conflit.
+    // geolocator, sqflite...). Laisser flutter.ndkVersion provoque un
+    // conflit de versions au build.
     ndkVersion = "28.2.13676358"
 
     compileOptions {
@@ -69,8 +76,15 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // DESACTIVEES VOLONTAIREMENT (21/10/2026).
+            // Avec R8 actif, l'application s'installait mais restait
+            // bloquee sur l'ecran de demarrage : le premier appel de
+            // plugin echouait dans un callback asynchrone, sans message.
+            // Les reactiver exige des regles de conservation, notamment
+            // pour flutter_local_notifications qui passe par Gson et
+            // donc par la reflexion. Le gain n'est que de quelques Mo.
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
